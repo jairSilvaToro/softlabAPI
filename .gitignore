@@ -1,5 +1,4 @@
 # Ignore sensitive configuration files
-.env
 
 # Ignore Composer dependencies
 /vendor/

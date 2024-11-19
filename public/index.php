@@ -14,6 +14,10 @@ switch (true) {
     case $uri === '/login' || preg_match('/\/login\/(\d+)/', $uri):
         require '../src/Routes/Authentication.php';
         break;
+    
+    case $uri === '/posts' || preg_match('/\/posts\/(\d+)/', $uri) || preg_match('/\/posts\/user\/(\d+)/', $uri):
+            require '../src/Routes/Posts.php';
+            break;
 
     default:
         http_response_code(404);

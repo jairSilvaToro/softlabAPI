@@ -26,19 +26,19 @@ switch ($method) {
 
     case 'POST':
         // Crear un nuevo usuario (e.g., POST /users)
-        echo $userController->createUser();
+        $resp = $userController->createUser();
+        $decode = json_decode($resp);
+        if(isset($decode->error))
+        {
+            echo json_encode(['error' => 'The user could not be created']);
+        }else{
+            echo $resp;
+        }      
         break;
 
     case 'PUT':
         // Actualizar un usuario existente (e.g., PUT /users/1)
-        echo $userController->updateUser();
-        // if (preg_match('/\/users\/(\d+)/', $request, $matches)) {
-        //     $userId = $matches[1];
-        //     echo $userController->updateUser($userId);
-        // } else {
-        //     http_response_code(404);
-        //     echo json_encode(['message' => 'Ruta no encontrada']);
-        // }
+        $resp = $userController->updateUser();       
         break;
 
     case 'DELETE':

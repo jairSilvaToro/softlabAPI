@@ -90,8 +90,7 @@ class User {
                 $this->conn = null;               
                 return false;
         } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
-            return false;
+            return json_encode(['error' => $e->getMessage()]);
         } 
     }
 
