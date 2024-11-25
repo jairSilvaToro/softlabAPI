@@ -13,6 +13,7 @@ $userController = new UserController($database);
 
 switch ($method) {
     case 'GET':
+        
         // Listar todos los usuarios o uno en específico
         if (preg_match('/\/users\/(\d+)/', $request, $matches)) {
             // Ruta para obtener un usuario por ID (e.g., GET /users/1)
@@ -20,7 +21,10 @@ switch ($method) {
             echo json_encode($userController->getUserById($userId));
         } else {
             // Ruta para obtener todos los usuarios (e.g., GET /users)
-            echo json_encode($userController->getUsers());
+            $queryParams = $_GET;
+            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+            echo json_encode($userController->getUsers($page, $limit));
         }
         break;
 

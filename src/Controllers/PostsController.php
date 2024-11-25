@@ -12,9 +12,21 @@
             $this->postModel = new Post($database);
         }
 
-        public function getAllPosts() {
+        public function getAllPosts($page,$limit) {
             isAuthenticated();
-            return $this->postModel->getAllPosts();
+            $offset = ($page - 1) * $limit;
+            $posts = $this->postModel->getAllPosts($limit,$offset);
+            $totalPosts = $this->postModel->getTotalPosts();
+
+            return [
+                "data" => $posts,
+                "pagination" => [
+                    "current_page" => $page,
+                    "per_page" => $limit,
+                    "total" => $totalPosts,
+                    "total_pages" => ceil($totalPosts / $limit)
+                ]
+            ];
         }
 
         public function getPostById($postId){

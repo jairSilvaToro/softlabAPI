@@ -24,7 +24,10 @@ switch ($method) {
             echo json_encode($postController->getPostsByUser($postId));
         }else {
             // Ruta para obtener todos los usuarios (e.g., GET /users)
-            echo json_encode($postController->getAllPosts());
+            $queryParams = $_GET;
+            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+            echo json_encode($postController->getAllPosts($page,$limit));
         }
         break;
 

@@ -14,19 +14,32 @@ class Post {
         $this->jwtSecret = $_ENV['JWT_SECRET'];
     }   
 
-    public function getAllPosts() {
+    public function getAllPosts($limit, $offset) {
         if (!$this->conn) {
             return "No se pudo establecer la conexión a la base de datos.";
         }
 
         $query = "SELECT posts.post, posts.created_at, users.username 
                     FROM $this->table
-                    INNER JOIN users on posts.id_users = users.id ";
+                    INNER JOIN users on posts.id_users = users.id 
+                    LIMIT :limit OFFSET :offset";
         $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         $user = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        $this->conn = null;
         return $user ? $user : null;
+    }
+
+    public function getTotalPosts() {
+        if (!$this->conn) {
+            return "No se pudo establecer la conexión a la base de datos.";
+        }
+        $query = "SELECT COUNT(*) AS total FROM ".$this->table;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $this->conn = null;
+        return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
     public function getPostById($postId) {

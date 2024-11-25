@@ -26,7 +26,7 @@ class User {
                 $payload = [
                     'iss' => 'api-post',
                     'iat' => time(),
-                    'exp' => time() + (30 * 30), // Expira en 1 hora
+                    'exp' => time() + (60 * 60), // Expira en 1 hora
                     'userId' => $user['id']
                 ];
                 $jwt = JWT::encode($payload, $this->jwtSecret, 'HS256');
@@ -41,17 +41,29 @@ class User {
         }
     }    
 
-    public function getAllUsers() {
+    public function getAllUsers($limit, $offset) {
         if (!$this->conn) {
             return "No se pudo establecer la conexión a la base de datos.";
         }
 
-        $query = "SELECT id, name, email, username FROM " . $this->table;
+        $query = "SELECT id, name, email, username FROM " . $this->table." LIMIT :limit OFFSET :offset";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $user = $stmt->fetchAll(\PDO::FETCH_ASSOC);        
+        return $user ? $user : null;
+    }
+
+    public function getTotalUsers() {
+        if (!$this->conn) {
+            return "No se pudo establecer la conexión a la base de datos.";
+        }
+        $query = "SELECT COUNT(*) AS total FROM ".$this->table;
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-        $user = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $this->conn = null;
-        return $user ? $user : null;
+        return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
     public function getUserById($userId) {

@@ -7,7 +7,7 @@ header("Content-Type: application/json");
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 switch (true) {
-    case $uri === '/users' || preg_match('/\/users\/(\d+)/', $uri):
+    case $uri === '/users' || preg_match('/\/users\/(\d+)/', $uri) || preg_match('/\/users\/paginate/', $uri):
         require '../src/Routes/Users.php';
         break;
     
@@ -15,7 +15,7 @@ switch (true) {
         require '../src/Routes/Authentication.php';
         break;
     
-    case $uri === '/posts' || preg_match('/\/posts\/(\d+)/', $uri) || preg_match('/\/posts\/user\/(\d+)/', $uri):
+    case $uri === '/posts' || preg_match('/\/posts\/(\d+)/', $uri) || preg_match('/\/posts\/user\/(\d+)/', $uri || preg_match('/\/posts\/paginate/', $uri)):
             require '../src/Routes/Posts.php';
             break;
 

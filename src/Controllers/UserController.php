@@ -12,9 +12,21 @@
             $this->userModel = new User($database);
         }
 
-        public function getUsers() {
+        public function getUsers($page, $limit) {
             isAuthenticated();
-            return $this->userModel->getAllUsers();
+            $offset = ($page - 1) * $limit;
+            $users = $this->userModel->getAllUsers($limit, $offset);
+            $totalUsers = $this->userModel->getTotalUsers();
+
+            return [
+                "data" => $users,
+                "pagination" => [
+                    "current_page" => $page,
+                    "per_page" => $limit,
+                    "total" => $totalUsers,
+                    "total_pages" => ceil($totalUsers / $limit)
+                ]
+            ];
         }
 
         public function getUserById($userId){
