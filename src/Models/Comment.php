@@ -4,45 +4,44 @@ use PDO;
 use PDOException;
 use Firebase\JWT\JWT;
 
-class Post {
+class Comment {
     private $conn;
     private $jwtSecret;
-    private $table = 'posts';
+    private $table = 'comments';
 
     public function __construct($database) {
         $this->conn  = $database->connect();
         $this->jwtSecret = $_ENV['JWT_SECRET'];
     }   
 
-    public function getAllPosts($limit, $offset) {
+    public function getCommentsByPost($postId, $limit = 10, $offset = 0) {
         if (!$this->conn) {
             return "No se pudo establecer la conexión a la base de datos.";
         }
-
-        $query = "SELECT posts.post, posts.created_at, users.username 
-                    FROM $this->table
-                    INNER JOIN users on posts.id_users = users.id 
-                    LIMIT :limit OFFSET :offset";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        $user = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return $user ? $user : null;
-    }
-
-    public function getTotalPosts() {
-        if (!$this->conn) {
-            return "No se pudo establecer la conexión a la base de datos.";
+    
+        $query = "SELECT comments.comment, comments.created_at, users.username 
+                  FROM $this->table
+                  INNER JOIN users ON comments.id_user = users.id 
+                  WHERE comments.id_posts = :postId
+                  LIMIT :limit OFFSET :offset";
+    
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':postId', $postId, PDO::PARAM_INT);
+            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    
+            $stmt->execute();
+            $this->conn = null;
+    
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return "Error en la consulta: " . $e->getMessage();
         }
-        $query = "SELECT COUNT(*) AS total FROM ".$this->table;
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        $this->conn = null;
-        return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
+    
 
-    public function getPostById($postId) {
+    public function getCommentById($commentId) {
         if (!$this->conn) {
             return "No se pudo establecer la conexión a la base de datos.";
         }
@@ -55,7 +54,7 @@ class Post {
                 FROM $this->table 
                 WHERE id = :postId";        
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':postId', $postId, PDO::PARAM_INT);
+        $stmt->bindParam(':postId', $commentId, PDO::PARAM_INT);
         
         $stmt->execute();
         $this->conn = null;
@@ -76,15 +75,16 @@ class Post {
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function createPost($post,$userId) {
+    public function createComment($comment) {
 
         try {
             // Preparar la consulta
-            $query = "INSERT INTO $this->table (post, id_users) VALUES (:post, :userId)";
+            $query = "INSERT INTO $this->table (comment, id_posts,id_user) VALUES (:comment, :idPost,:idUser)";
             $stmt = $this->conn->prepare($query);
 
-            $stmt->bindParam(':post', $post);
-            $stmt->bindParam(':userId', $userId);
+            $stmt->bindParam(':comment', $comment->comment);
+            $stmt->bindParam(':idUser', $comment->id_user);
+            $stmt->bindParam(':idPost', $comment->id_posts);
     
             if ($stmt->execute()) {
                 $this->conn = null;
@@ -97,14 +97,14 @@ class Post {
         } 
     }
 
-    public function deletePost($postId){
+    public function deleteComment($commentId){
         if (!$this->conn) {
             return "No se pudo establecer la conexión a la base de datos.";
         }
 
-        $query = "DELETE FROM $this->table WHERE posts.id = :postId";
+        $query = "DELETE FROM $this->table WHERE comments.id = :commentId";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':postId', $postId, PDO::PARAM_INT);
+        $stmt->bindParam(':commentId', $commentId, PDO::PARAM_INT);
         
         if ($stmt->execute()) {
             $this->conn = null;
@@ -114,15 +114,15 @@ class Post {
         return false;
     }
 
-    public function updatePost($post,$id){
+    public function updateComment($comment,$id){
 
         try {
             if (!$this->conn) {
                 return "No se pudo establecer la conexión a la base de datos.";
             }
-            $query = "UPDATE posts SET post = :post WHERE posts.id = :id";
+            $query = "UPDATE $this->table SET comment = :comment WHERE comments.id = :id";
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':post', $post);
+            $stmt->bindParam(':comment', $comment);
             $stmt->bindParam(':id', $id);
             if ($stmt->execute()) {
                 $this->conn = null;

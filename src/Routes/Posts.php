@@ -23,7 +23,7 @@ switch ($method) {
             $postId = $matches[1];
             echo json_encode($postController->getPostsByUser($postId));
         }else {
-            // Ruta para obtener todos los usuarios (e.g., GET /users)
+            // Ruta para obtener todos los posts (e.g., GET /users)
             $queryParams = $_GET;
             $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
             $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
@@ -44,12 +44,12 @@ switch ($method) {
         break;
 
     case 'PUT':
-        // Actualizar un usuario existente (e.g., PUT /users/1)
+        // Actualizar un post existente (e.g., PUT /post/1)
         echo $postController->updatePost();       
         break;
 
     case 'DELETE':
-        // Eliminar un post existente (e.g., DELETE /users/1)
+        // Eliminar un post existente (e.g., DELETE /post/1)
         if (preg_match('/\/posts\/(\d+)/', $request, $matches)) {
             $postId = $matches[1];
             echo $postController->deletePost($postId);

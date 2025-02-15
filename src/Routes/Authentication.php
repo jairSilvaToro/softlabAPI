@@ -15,6 +15,6 @@ if($method === 'POST'){
     $authController->login();
 }else{
     return json_encode(
-        ["message" => "Ruta no encvontrada"]
+        ["message" => "Ruta no encontrada"]
     );
 }
