@@ -3,17 +3,17 @@
 namespace App\Controllers;
 
 // Importamos el modelo de usuario
-use App\Models\User;
+use App\Models\Empleado;
 
 // Definimos la clase AuthenticationController que manejará la autenticación de usuarios
 class AuthenticationController {
     // Declaramos una propiedad privada para almacenar la instancia del modelo de usuario
-    private $userModel;
+    private $empleado;
 
     // Constructor de la clase que recibe una conexión a la base de datos como parámetro
     public function __construct($database) {
         // Inicializamos el modelo de usuario con la conexión a la base de datos
-        $this->userModel = new User($database);
+        $this->empleado = new Empleado($database);
     }
 
     // Método para manejar el proceso de inicio de sesión
@@ -24,7 +24,7 @@ class AuthenticationController {
         // Verificamos si se han proporcionado tanto el nombre de usuario como la contraseña
         if(isset($data->username, $data->password)){
             // Intentamos autenticar al usuario utilizando el modelo de usuario
-            $result = $this->userModel->authenticate($data->username, $data->password);
+            $result = $this->empleado->authenticate($data);
 
             // Si la autenticación es exitosa, devolvemos un mensaje de éxito y un token
             if ($result) {

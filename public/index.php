@@ -12,9 +12,9 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 // Usamos una estructura switch para manejar las rutas de la aplicación
 switch (true) {
     // Caso para rutas relacionadas con usuarios
-    case $uri === '/users' || preg_match('/\/users\/(\d+)/', $uri) || preg_match('/\/users\/paginate/', $uri):
+    case $uri === '/roles' || preg_match('/\/roles\/(\d+)/', $uri) || preg_match('/\/roles\/paginate/', $uri):
         // Incluimos el archivo de rutas de usuarios
-        require '../src/Routes/Users.php';
+        require '../src/Routes/Roles.php';
         break;
     
     // Caso para rutas relacionadas con autenticación (login)
@@ -23,16 +23,22 @@ switch (true) {
         require '../src/Routes/Authentication.php';
         break;
     
-    // Caso para rutas relacionadas con publicaciones (posts)
-    case $uri === '/posts' || preg_match('/\/posts\/(\d+)/', $uri) || preg_match('/\/posts\/user\/(\d+)/', $uri) || preg_match('/\/posts\/paginate/', $uri):
-        // Incluimos el archivo de rutas de publicaciones
-        require '../src/Routes/Posts.php';
+    // Caso para rutas relacionadas con empleado
+    case $uri === '/empleados' || preg_match('/\/empleados\/(\d+)/', $uri) || preg_match('/\/empleados\/paginate/', $uri):
+        // Incluimos el archivo de rutas de empleados
+        require '../src/Routes/Empleados.php';
         break;
 
-    // Caso para rutas relacionadas con comentarios
-    case $uri === '/comments' || preg_match('/\/comments\/(\d+)/', $uri) || preg_match('/\/comments\/post\/(\d+)/', $uri) || preg_match('/\/comments\/paginate/', $uri):
-        // Incluimos el archivo de rutas de comentarios
-        require '../src/Routes/Comments.php';
+    // Caso para rutas relacionadas con representantes
+    case $uri === '/representantes' || preg_match('/\/representantes\/(\d+)/', $uri) || preg_match('/\/representantes\/paginate/', $uri):
+        // Incluimos el archivo de rutas de representantes
+        require '../src/Routes/Representantes.php';
+        break;
+
+        // Caso para rutas relacionadas con empresas
+    case $uri === '/empresas' || preg_match('/\/empresas\/(\w+)/', $uri) || preg_match('/\/empresas\/paginate/', $uri):        
+        // Incluimos el archivo de rutas de representantes
+        require '../src/Routes/Empresas.php';
         break;
 
     // Caso por defecto para rutas no encontradas

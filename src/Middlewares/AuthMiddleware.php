@@ -14,7 +14,6 @@ function isAuthenticated() {
         try {
             $secret = $_ENV['JWT_SECRET'];
             $decoded = JWT::decode($jwt, new Key($secret, 'HS256'));
-
             return $decoded;
         } catch (Exception $e) {
             echo json_encode(["message" => "Token inválido"]);
