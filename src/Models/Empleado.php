@@ -172,7 +172,7 @@ class Empleado {
 
             if($user && password_verify($empleado->password, $user['password'])){
                 $payload = [
-                    'iss' => 'api-softlab',
+                    'iss' => 'softlabAPI',
                     'iat' => time(),
                     'exp' => time() + (60 * 60), // Expira en 1 hora
                     'userId' => $user['cedula_empleado'],
